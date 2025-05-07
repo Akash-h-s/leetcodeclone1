@@ -1,0 +1,412 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+  <title>LeetClone</title>
+  <style>
+    * {
+      box-sizing: border-box;
+      margin: 0;
+      padding: 0;
+    }
+
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      background: #f9f9f9;
+      color: #333;
+    }
+
+    header {
+      background-color: #fff;
+      padding: 1rem 2rem;
+      border-bottom: 1px solid #eee;
+      align-items: center;
+      position: sticky;
+      top: 0;
+      z-index: 100;
+    }
+
+    .logo {
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #ffa116;
+    }
+
+    .head {
+      display: flex;
+      justify-content: space-between;
+    }
+
+    nav a {
+      margin-left: 1.5rem;
+      text-decoration: none;
+      color: #555;
+      font-weight: 500;
+    }
+
+    nav a:hover {
+      color: #ffa116;
+    }
+
+    .hero {
+      padding: 4rem 2rem;
+      background: linear-gradient(90deg, #fff, #ffe8c3);
+      text-align: center;
+     /* Start hidden for animation */
+      transform: translateY(-30px); /* Start above the screen */
+      animation: fadeInHeader 1s forwards;
+    }
+
+    .hero h1 {
+      font-size: 2.5rem;
+      margin-bottom: 1rem;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    .hero p {
+      font-size: 1.1rem;
+      margin-bottom: 2rem;
+      color: #444;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    .hero button {
+      background: #ffa116;
+      color: white;
+      padding: 0.75rem 1.5rem;
+      border: none;
+      border-radius: 6px;
+      font-size: 1rem;
+      cursor: pointer;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    .hero button:hover {
+      background: #e69e0f;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    footer {
+      text-align: center;
+      padding: 2rem;
+      margin-top: 3rem;
+      border-top: 1px solid #eee;
+      background-color: #fff;
+    }
+
+    .problems-section {
+      padding: 1rem 2rem;
+      max-width: 1000px;
+      margin: auto;
+    }
+
+    .problem-list {
+      border: 1px solid #ddd;
+      border-radius: 8px;
+      overflow: hidden;
+      background: white;
+    }
+
+    .problem-row,
+    .problem-header {
+      display: grid;
+      grid-template-columns: 3fr 1fr 1fr;
+      padding: 1rem;
+      border-bottom: 1px solid #eee;
+    }
+
+    .problem-header {
+      font-weight: bold;
+      background: #f4f4f4;
+    }
+
+    .problem-row:hover {
+      background-color: #fdf6e3;
+      cursor: pointer;
+    }
+
+    .Easy { color: green; font-weight: bold; }
+    .Medium { color: orange; font-weight: bold; }
+    .Hard { color: red; font-weight: bold; }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 999;
+      left: 0; top: 0;
+      width: 100%; height: 100%;
+      overflow: auto;
+      background-color: rgba(0, 0, 0, 0.5);
+    }
+
+    .modal-content {
+      background-color: #fff;
+      margin: 10% auto;
+      padding: 2rem;
+      border: 1px solid #ccc;
+      width: 80%;
+      max-width: 600px;
+      border-radius: 10px;
+      position: relative;
+    }
+
+    .close {
+      position: absolute;
+      top: 1rem; right: 1rem;
+      font-size: 1.5rem;
+      font-weight: bold;
+      color: #333;
+      cursor: pointer;
+    }
+
+    .filter-controls {
+      display: flex;
+      justify-content: center;
+      gap: 1rem;
+      align-items: center;
+      margin: 2rem 0;
+      animation: fadeIn 1s ease-in-out;
+    }
+
+    #searchInput {
+      padding: 0.5rem;
+      width: 60%;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    #difficultyFilter {
+      padding: 0.5rem;
+      border-radius: 6px;
+    }
+
+    #codeEditor {
+      width: 100%;
+      height: 200px;
+      font-family: monospace;
+      font-size: 1rem;
+      padding: 1rem;
+      margin-top: 1rem;
+      border: 1px solid #ccc;
+      border-radius: 8px;
+      background-color: #f9f9f9;
+      resize: vertical;
+    }
+
+    .editor-buttons {
+      display: flex;
+      justify-content: flex-end;
+      gap: 1rem;
+      margin-top: 1rem;
+    }
+
+    .editor-buttons button {
+      background: #ffa116;
+      border: none;
+      padding: 0.6rem 1.2rem;
+      border-radius: 6px;
+      color: white;
+      font-weight: bold;
+      cursor: pointer;
+    }
+
+    .editor-buttons button:hover {
+      background: #e69e0f;
+    }
+  </style>
+</head>
+<body>
+
+  <header>
+    <div class="head">
+      <div class="logo">LeetCode</div>
+      <nav>
+        <a href="index.html">Explore</a>
+        <a href="problems.html">Problems</a>
+        <a href="contest.html">Contests</a>
+        <a href="discus.html">Discuss</a>
+        <a href="login.html">Sign In</a>
+        <a href="account.html">Account</a>
+      </nav>
+    </div>
+  </header>
+
+  <section class="hero">
+    <h1>Level Up Your Coding Skills</h1>
+    <p>Practice real interview questions from top tech companies</p>
+    <button onclick="window.location.href='login.html'">Get Started</button>
+  </section>
+
+  <div class="filter-controls">
+    <input type="text" id="searchInput" placeholder="Search problems..." />
+    <select id="difficultyFilter">
+      <option value="All">All Difficulties</option>
+      <option value="Easy">Easy</option>
+      <option value="Medium">Medium</option>
+      <option value="Hard">Hard</option>
+    </select>
+  </div>
+
+  <section class="problems-section" id="problems">
+    <h2 style="padding: 2rem 2rem 1rem;">Problem Set</h2>
+    <div class="problem-list" id="problemList"></div>
+  </section>
+
+  <!-- Problem Modal -->
+  <div id="problemModal" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="modal.style.display='none'">&times;</span>
+      <h2 id="modalTitle">Problem Title</h2>
+      <p id="modalDescription">Problem description will appear here.</p>
+      <label for="languageSelect">Language:</label>
+      <select id="languageSelect">
+        <option>JavaScript</option>
+        <option>Python</option>
+        <option>Java</option>
+        <option>C++</option>
+      </select>
+      <textarea id="codeEditor" placeholder="Write your code here..."></textarea>
+      <div class="editor-buttons">
+        <button onclick="alert('Code executed (simulated)!')">Run Code</button>
+        <button onclick="alert('Solution submitted (simulated)!')">Submit</button>
+      </div>
+    </div>
+  </div>
+
+  <!-- Popup 1: LeetCoins -->
+  <div id="coinPopup" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="coinPopup.style.display='none'">&times;</span>
+      <h2 style="color: #ffa116;">🎯 Solve and earn 100 LeetCoins!</h2>
+      <p id="popupProblemTitle"></p>
+      <textarea id="popupEditor" placeholder="Write your code here..." style="width: 100%; height: 300px; padding: 1rem; font-family: monospace; border-radius: 8px;"></textarea>
+
+      <div class="editor-buttons">
+        <button onclick="alert('Code executed (simulated)!')">Run Code</button>
+        <button id="submitCoinBtn">Submit</button>
+      </div>
+      <div id="rewardMessage" style="display:none;text-align:center;margin-top:1rem;">
+        <h3 style="color: green;">🎉 You earned 100 LeetCoins!</h3>
+        <img src="https://tse2.mm.bing.net/th?id=OIP.YJ3NwrI8BmCW1tbpf8-XMwHaHw&pid=Api&P=0&h=180" alt="coin" width="80">
+        <img src="https://tse1.mm.bing.net/th?id=OIP.LXgAQ2HpdsqPJQ4VV5_2oQAAAA&pid=Api&P=0&h=180" alt="coin"  width="80">
+      </div>
+    </div>
+  </div>
+
+  <!-- Popup 2: Premium Questions -->
+  <div id="premiumPopup" class="modal">
+    <div class="modal-content">
+      <span class="close" onclick="premiumPopup.style.display='none'">&times;</span>
+      <h2 style="color: #ffa116;">🔓 Unlock 100 Premium Questions!</h2>
+      <h3  style="color: green;">Congratulations you maintained 100 days streak now solve this question and unlock 100 premium questions</h3>
+      <p id="premiumPopupTitle"></p>
+      <textarea id="popupEditor" placeholder="Write your code here..." style="width: 100%; height: 300px; padding: 1rem; font-family: monospace; border-radius: 8px;"></textarea>
+
+      <div class="editor-buttons">
+        <button onclick="alert('Code executed (simulated)!')">Run Code</button>
+        <button onclick="alert('Premium questions unlocked (simulated)!')">Unlock</button>
+      </div>
+    </div>
+  </div>
+
+  <footer>
+    © 2025 LeetClone. All rights reserved.
+  </footer>
+
+  <script>
+    const problems = Array.from({ length: 50 }, (_, i) => ({
+      title: `Problem #${i + 1} - ${["Two Sum", "Binary Search", "String Reverse", "Max Subarray", "Graph Traversal"][i % 5]}`,
+      difficulty: ["Easy", "Medium", "Hard"][i % 3],
+      status: ["Unsolved", "Solved"][i % 2],
+      description: `Description for Problem #${i + 1}.`,
+      premium: i % 7 === 0
+    }));
+    
+    const problemList = document.getElementById("problemList");
+    const searchInput = document.getElementById("searchInput");
+    const difficultyFilter = document.getElementById("difficultyFilter");
+    
+    function renderProblems() {
+      problemList.innerHTML = `
+        <div class="problem-header">
+          <div>Title</div><div>Difficulty</div><div>Status</div>
+        </div>`;
+      const search = searchInput.value.toLowerCase();
+      const selectedDifficulty = difficultyFilter.value;
+    
+      problems.filter(p =>
+        p.title.toLowerCase().includes(search) &&
+        (selectedDifficulty === "All" || p.difficulty === selectedDifficulty)
+      ).forEach(problem => {
+        const row = document.createElement("div");
+        row.className = "problem-row";
+        row.innerHTML = `
+          <div>${problem.title} ${problem.premium ? '<i class="fa fa-lock" title="Premium Problem"></i>' : ''}</div>
+          <div class="${problem.difficulty}">${problem.difficulty}</div>
+          <div>${problem.status}</div>`;
+        
+        row.onclick = () => {
+          if (problem.premium) {
+            showPremiumPrompt(problem);
+          } else {
+            showModal(problem);
+          }
+        };
+    
+        problemList.appendChild(row);
+      });
+    }
+    
+    // Show problem modal
+    function showModal(problem) {
+      document.getElementById("modalTitle").textContent = problem.title;
+      document.getElementById("modalDescription").textContent = problem.description;
+      document.getElementById("problemModal").style.display = "block";
+    }
+    
+    // Show premium subscription prompt
+    function showPremiumPrompt(problem) {
+      document.getElementById("premiumPopupTitle").textContent = `🔒 ${problem.title} is a Premium Problem`;
+      document.getElementById("premiumPopup").style.display = "block";
+    }
+    
+    // Search + filter
+    searchInput.addEventListener("input", renderProblems);
+    difficultyFilter.addEventListener("change", renderProblems);
+    renderProblems();
+    
+    // Popups (LeetCoins every 30s)
+    const coinPopup = document.getElementById("coinPopup");
+    const popupProblemTitle = document.getElementById("popupProblemTitle");
+    const rewardMessage = document.getElementById("rewardMessage");
+    document.getElementById("submitCoinBtn").onclick = () => rewardMessage.style.display = "block";
+    setInterval(() => {
+      const random = problems[Math.floor(Math.random() * problems.length)];
+      popupProblemTitle.textContent = random.title;
+      rewardMessage.style.display = "none";
+      document.getElementById("popupEditor").value = "";
+      coinPopup.style.display = "block";
+    }, 30000);
+    
+    // Premium popup every 40s
+    const premiumPopup = document.getElementById("premiumPopup");
+    const premiumPopupTitle = document.getElementById("premiumPopupTitle");
+    setInterval(() => {
+      const random = problems[Math.floor(Math.random() * problems.length)];
+      premiumPopupTitle.textContent = `🔓 Unlock ${random.title} and 100 Premium Problems`;
+      premiumPopup.style.display = "block";
+    }, 40000);
+    
+    // Close modals
+    document.querySelectorAll('.close').forEach(btn => {
+      btn.addEventListener("click", () => {
+        btn.closest(".modal").style.display = "none";
+      });
+    });
+    </script>
+    
+
+</body>
+</html>

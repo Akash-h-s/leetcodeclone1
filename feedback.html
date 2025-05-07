@@ -1,0 +1,260 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contests Page with Feedback</title>
+  <!-- Ace Editor -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f0f2f5;
+      margin: 0;
+      padding: 0;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    header {
+      height: 100px;
+      background-color: #333;
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .leetcode-header {
+      background: linear-gradient(to bottom right, #1f1f1f, #2c2f35);
+      color: white;
+      text-align: center;
+      padding: 40px 20px;
+    }
+
+    .leetcode-header .trophy {
+      width: 100px;
+      height: 100px;
+      background: url('https://em-content.zobj.net/thumbs/240/apple/354/trophy_1f3c6.png') no-repeat center;
+      background-size: contain;
+      margin: 0 auto 20px;
+    }
+
+    .leetcode-header h1 {
+      font-size: 2.5rem;
+      margin: 0;
+    }
+
+    .leetcode-header p {
+      font-size: 1rem;
+      margin-top: 10px;
+      color: #ccc;
+    }
+
+    footer {
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      padding: 15px;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      font-size: 0.9rem;
+      letter-spacing: 1px;
+    }
+
+    .contest-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+      margin: 40px 10px;
+    }
+
+    .contest {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+      width: 30%;
+      min-width: 280px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .contest h2 {
+      color: #333;
+      font-size: 1.8rem;
+      margin-bottom: 15px;
+    }
+
+    .contest ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .contest li {
+      font-size: 1.1rem;
+      margin: 10px 0;
+      transition: transform 0.3s ease;
+      cursor: pointer;
+    }
+
+    .contest li:hover {
+      transform: scale(1.05);
+      color: #007bff;
+    }
+
+    /* Feedback Section */
+    .feedback-container {
+      margin: 40px auto;
+      max-width: 600px;
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+    }
+
+    .feedback-container h2 {
+      font-size: 1.8rem;
+      margin-bottom: 15px;
+      color: #333;
+    }
+
+    .stars {
+      display: flex;
+      margin-bottom: 20px;
+    }
+
+    .star {
+      font-size: 30px;
+      cursor: pointer;
+      color: #ccc;
+    }
+
+    .star.selected {
+      color: orange;
+    }
+
+    .comment-field {
+      width: 100%;
+      height: 100px;
+      margin-bottom: 20px;
+      padding: 10px;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+      font-size: 1rem;
+    }
+
+    .submit-feedback {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+    }
+
+    .submit-feedback:hover {
+      background-color: #0056b3;
+    }
+
+    .feedback-list {
+      margin-top: 30px;
+    }
+
+    .feedback-item {
+      padding: 10px;
+      margin-bottom: 10px;
+      background-color: #f9f9f9;
+      border-radius: 8px;
+      border: 1px solid #ddd;
+    }
+
+    .feedback-item p {
+      margin: 5px 0;
+    }
+  </style>
+</head>
+<body>
+  <header>
+    <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 0 20px;">
+      <h1 style="margin: 0; text-align: center; flex-grow: 1;">Contest Feedback</h1>
+    </div>
+  </header>
+  <div class="leetcode-header">
+    <div class="trophy"></div>
+    <h1>LeetCode Contest</h1>
+    <p>Contest every week. Compete and see your ranking!</p>
+  </div>
+
+  <main>
+    <!-- Feedback Section -->
+    <section class="feedback-container">
+      <h2>Feedback</h2>
+      <div class="stars">
+        <span class="star" onclick="selectStar(1)">&#9733;</span>
+        <span class="star" onclick="selectStar(2)">&#9733;</span>
+        <span class="star" onclick="selectStar(3)">&#9733;</span>
+        <span class="star" onclick="selectStar(4)">&#9733;</span>
+        <span class="star" onclick="selectStar(5)">&#9733;</span>
+      </div>
+
+      <textarea id="commentField" class="comment-field" placeholder="Enter your feedback here..."></textarea>
+      <button class="submit-feedback" onclick="submitFeedback()">Submit</button>
+
+      <!-- Feedback List -->
+      <div class="feedback-list" id="feedbackList"></div>
+    </section>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Contest Platform. All Rights Reserved.</p>
+  </footer>
+
+  <script>
+    let selectedRating = 0;
+
+    // Select star rating
+    function selectStar(rating) {
+      selectedRating = rating;
+      const stars = document.querySelectorAll('.star');
+      stars.forEach((star, index) => {
+        if (index < rating) {
+          star.classList.add('selected');
+        } else {
+          star.classList.remove('selected');
+        }
+      });
+    }
+
+    // Submit Feedback
+    function submitFeedback() {
+      const comment = document.getElementById('commentField').value;
+      if (selectedRating === 0 || comment.trim() === "") {
+        alert("Please select a rating and write a comment.");
+        return;
+      }
+
+      const feedbackList = document.getElementById('feedbackList');
+
+      const feedbackItem = document.createElement('div');
+      feedbackItem.classList.add('feedback-item');
+
+      const feedbackContent = `
+        <strong>Rating: ${selectedRating} Stars</strong>
+        <p>${comment}</p>
+      `;
+      feedbackItem.innerHTML = feedbackContent;
+
+      feedbackList.appendChild(feedbackItem);
+
+      // Reset after submission
+      document.getElementById('commentField').value = '';
+      selectedRating = 0;
+      const stars = document.querySelectorAll('.star');
+      stars.forEach(star => star.classList.remove('selected'));
+    }
+  </script>
+</body>
+</html>

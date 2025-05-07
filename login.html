@@ -1,0 +1,152 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Login / Sign Up</title>
+  <style>
+    body {
+      font-family: 'Segoe UI', sans-serif;
+      display: flex;
+      justify-content: center;
+      align-items: center;
+      height: 100vh;
+      background: #f9f9f9;
+    }
+
+    .login-container {
+      background: white;
+      padding: 2rem;
+      border-radius: 8px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      width: 300px;
+    }
+
+    .login-container h2 {
+      text-align: center;
+      margin-bottom: 1rem;
+    }
+
+    .login-container input {
+      width: 100%;
+      padding: 0.75rem;
+      margin: 0.5rem 0;
+      border: 1px solid #ccc;
+      border-radius: 6px;
+    }
+
+    .login-container button {
+      width: 100%;
+      padding: 0.75rem;
+      background-color: #ffa116;
+      color: white;
+      border: none;
+      border-radius: 6px;
+      cursor: pointer;
+      font-size: 1.1rem;
+    }
+
+    .login-container button:hover {
+      background-color: #e69e0f;
+    }
+
+    .signup-link {
+      text-align: center;
+      margin-top: 1rem;
+    }
+
+    .signup-link a {
+      color: #ffa116;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    .toggle-form {
+      text-align: center;
+      margin-top: 1rem;
+    }
+    
+    .toggle-form a {
+      color: #ffa116;
+      cursor: pointer;
+    }
+  </style>
+</head>
+<body>
+
+  <!-- Login Form -->
+  <div class="login-container" id="loginForm">
+    <h2>Sign In</h2>
+    <form id="loginForm">
+      <input type="text" placeholder="Enter your email" id="loginEmail" required />
+      <input type="password" placeholder="Enter your password" id="loginPassword" required />
+      <button type="submit" onclick="handleLogin(event)">Sign In</button>
+    </form>
+    <div class="toggle-form">
+      <span>Don't have an account? </span><a href="#" onclick="toggleToSignUp()">Sign Up</a>
+    </div>
+  </div>
+
+  <!-- Sign Up Form -->
+  <div class="login-container" id="signUpForm" style="display: none;">
+    <h2>Create Account</h2>
+    <form id="signupForm">
+      <input type="text" placeholder="Enter your account name" id="accountName" required />
+      <input type="email" placeholder="Enter your email" id="signUpEmail" required />
+      <input type="password" placeholder="Enter your password" id="signUpPassword" required />
+      <input type="password" placeholder="Confirm your password" id="confirmPassword" required />
+      <button type="submit" onclick="handleSignUp(event)">Sign Up</button>
+    </form>
+    <div class="toggle-form">
+      <span>Already have an account? </span><a href="#" onclick="toggleToLogin()">Sign In</a>
+    </div>
+  </div>
+
+  <script>
+    // Toggle between login and sign up forms
+    function toggleToSignUp() {
+      document.getElementById('loginForm').style.display = 'none';
+      document.getElementById('signUpForm').style.display = 'block';
+    }
+
+    function toggleToLogin() {
+      document.getElementById('signUpForm').style.display = 'none';
+      document.getElementById('loginForm').style.display = 'block';
+    }
+
+    // Handle Sign In
+    function handleLogin(event) {
+      event.preventDefault();
+      const email = document.getElementById('loginEmail').value;
+      const password = document.getElementById('loginPassword').value;
+      alert(`Logged in with Email: ${email}`);
+    }
+
+    // Handle Sign Up
+    function handleSignUp(event) {
+      event.preventDefault();
+
+      const accountName = document.getElementById('accountName').value;
+      const email = document.getElementById('signUpEmail').value;
+      const password = document.getElementById('signUpPassword').value;
+      const confirmPassword = document.getElementById('confirmPassword').value;
+
+      // Basic validation
+      if (password !== confirmPassword) {
+        alert("Passwords do not match. Please try again.");
+        return;
+      }
+
+      if (!email.includes('@')) {
+        alert("Please enter a valid email address.");
+        return;
+      }
+
+      alert(`Account created with name: ${accountName}, Email: ${email}`);
+      // Redirect to login page after successful signup
+      window.location.href = "login.html";
+    }
+  </script>
+
+</body>
+</html>

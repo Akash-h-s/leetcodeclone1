@@ -1,0 +1,561 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0"/>
+  <title>Contests Page</title>
+  <!-- Ace Editor -->
+  <script src="https://cdnjs.cloudflare.com/ajax/libs/ace/1.4.12/ace.js"></script>
+  <!-- Chart.js -->
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+  <style>
+    body {
+      font-family: 'Arial', sans-serif;
+      background-color: #f0f2f5;
+      margin: 0;
+      padding: 0;
+      color: #333;
+      line-height: 1.6;
+    }
+
+    header {
+      height: 100px;
+      background-color: #333;
+      color: #fff;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .leetcode-header {
+      background: linear-gradient(to bottom right, #1f1f1f, #2c2f35);
+      color: white;
+      text-align: center;
+      padding: 40px 20px;
+    }
+    .account{
+      display: flex;
+      white-space: 2rem;
+    }
+    .leetcode-header .trophy {
+      width: 100px;
+      height: 100px;
+      background: url('https://em-content.zobj.net/thumbs/240/apple/354/trophy_1f3c6.png') no-repeat center;
+      background-size: contain;
+      margin: 0 auto 20px;
+    }
+
+    .leetcode-header h1 {
+      font-size: 2.5rem;
+      margin: 0;
+    }
+
+    .leetcode-header p {
+      font-size: 1rem;
+      margin-top: 10px;
+      color: #ccc;
+    }
+
+    footer {
+      background-color: #333;
+      color: #fff;
+      text-align: center;
+      padding: 15px;
+      position: fixed;
+      bottom: 0;
+      width: 100%;
+      font-size: 0.9rem;
+      letter-spacing: 1px;
+    }
+
+    .contest-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+      margin: 40px 10px;
+    }
+
+    .contest {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+      width: 30%;
+      min-width: 280px;
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .contest h2 {
+      color: #333;
+      font-size: 1.8rem;
+      margin-bottom: 15px;
+    }
+
+    .contest ul {
+      list-style-type: none;
+      padding: 0;
+    }
+
+    .contest li {
+      font-size: 1.1rem;
+      margin: 10px 0;
+      transition: transform 0.3s ease;
+      cursor: pointer;
+    }
+
+    .contest li:hover {
+      transform: scale(1.05);
+      color: #007bff;
+    }
+
+    .modal {
+      display: none;
+      position: fixed;
+      z-index: 2;
+      left: 0;
+      top: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.4);
+      overflow: auto;
+    }
+
+    .modal-content {
+      background-color: #fff;
+      margin: 10% auto;
+      padding: 20px;
+      border-radius: 8px;
+      width: 60%;
+      max-width: 800px;
+      box-shadow: 0 4px 8px rgba(0, 0, 0, 0.1);
+      position: relative;
+    }
+
+    .close {
+      color: #aaa;
+      font-size: 2rem;
+      font-weight: bold;
+      position: absolute;
+      top: 10px;
+      right: 20px;
+    }
+
+    .close:hover,
+    .close:focus {
+      color: #000;
+      text-decoration: none;
+      cursor: pointer;
+    }
+
+    #codeEditor {
+      height: 400px;
+      width: 100%;
+    }
+
+    .editor-buttons button {
+      padding: 10px 20px;
+      background-color: #007bff;
+      color: white;
+      border: none;
+      border-radius: 4px;
+      cursor: pointer;
+      margin-right: 10px;
+    }
+
+    .editor-buttons button:hover {
+      background-color: #0056b3;
+    }
+
+    .chart-container {
+      width: 100%;
+      max-width: 400px;
+      margin: 0 auto;
+    }
+
+    canvas {
+      width: 100% !important;
+      height: auto !important;
+    }
+
+    /* Past Contests and Ranking Section */
+    .history-container {
+      display: flex;
+      flex-wrap: wrap;
+      gap: 20px;
+      justify-content: center;
+      margin: 40px auto;
+      width: 90%;
+      max-width: 1200px;
+    }
+
+    .past-contests, .ranking-section {
+      background-color: #fff;
+      padding: 20px;
+      border-radius: 12px;
+      box-shadow: 0 6px 12px rgba(0, 0, 0, 0.1);
+      flex: 1;
+      min-width: 300px;
+    }
+
+    .past-contests h2, .ranking-section h2 {
+      color: #333;
+      font-size: 1.8rem;
+      margin-bottom: 15px;
+      border-bottom: 2px solid #eee;
+      padding-bottom: 10px;
+    }
+
+    .contest-item {
+      padding: 10px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .contest-item:last-child {
+      border-bottom: none;
+    }
+
+    .contest-item h3 {
+      margin: 0;
+      color: #007bff;
+    }
+
+    .contest-item p {
+      margin: 5px 0;
+      color: #666;
+    }
+
+    .ranking-section h3 {
+      color: #333;
+      font-size: 1.5rem;
+      margin-bottom: 15px;
+    }
+
+    .ranking-item {
+      display: flex;
+      align-items: center;
+      padding: 8px 0;
+      border-bottom: 1px solid #eee;
+    }
+
+    .rank {
+      font-weight: bold;
+      width: 30px;
+    }
+
+    .user-info {
+      flex-grow: 1;
+    }
+
+    .user-name {
+      font-weight: bold;
+    }
+
+    .user-stats {
+      font-size: 0.9rem;
+      color: #666;
+    }
+
+    @media (max-width: 768px) {
+      .modal-content {
+        width: 90%;
+      }
+
+      #codeEditor {
+        height: 300px;
+      }
+
+      .editor-buttons button {
+        width: 100%;
+        margin-bottom: 10px;
+      }
+
+      .contest {
+        width: 100%;
+      }
+
+      .history-container {
+        flex-direction: column;
+      }
+    }
+  </style>
+</head>
+<body>
+  <header>
+  <div style="display: flex; align-items: center; justify-content: space-between; width: 100%; padding: 0 20px; height: 100px;">
+    <h1 style="margin: 0; text-align: center; flex-grow: 1;">Welcome to the Contests</h1>
+    <div class="account" style="display: flex; align-items: center; justify-content: flex-end;">
+      <a href="account.html" style="color: white; text-decoration: none; margin-right: 20px;">Account</a>
+      <a href="feedback.html" style="color: white; text-decoration: none;">Feedback</a>
+    </div>
+  </div>
+</header>
+
+
+  
+
+  <div class="leetcode-header">
+    <div class="trophy"></div>
+    <h1>LeetCode Contest</h1>
+    <p>Contest every week. Compete and see your ranking!</p>
+  </div>
+
+  <main>
+    <section class="contest-container">
+      <!-- Weekly Contest -->
+      <div class="contest">
+        <h2>Weekly Contest</h2>
+        <ul>
+          <li onclick="showProblemDetails(1)">Problem 1: Find Prime Numbers</li>
+          <li onclick="showProblemDetails(2)">Problem 2: Reverse Array</li>
+          <li onclick="showProblemDetails(3)">Problem 3: Merge Sorted Arrays</li>
+          <li onclick="showProblemDetails(4)">Problem 4: Knapsack Problem</li>
+          <li onclick="showProblemDetails(5)">Problem 5: Longest Substring Without Repeating Characters</li>
+        </ul>
+        <div class="chart-container">
+          <canvas id="weeklyChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Biweekly Contest -->
+      <div class="contest">
+        <h2>Biweekly Contest</h2>
+        <ul>
+          <li onclick="showProblemDetails(6)">Problem 1: Find Factorial</li>
+          <li onclick="showProblemDetails(7)">Problem 2: Binary Search</li>
+          <li onclick="showProblemDetails(8)">Problem 3: Merge Sort</li>
+          <li onclick="showProblemDetails(9)">Problem 4: Maximum Subarray Sum</li>
+          <li onclick="showProblemDetails(10)">Problem 5: Valid Parentheses</li>
+        </ul>
+        <div class="chart-container">
+          <canvas id="biweeklyChart"></canvas>
+        </div>
+      </div>
+
+      <!-- Monthly Contest -->
+      <div class="contest">
+        <h2>Monthly Contest</h2>
+        <ul>
+          <li onclick="showProblemDetails(11)">Problem 1: Fibonacci Sequence</li>
+          <li onclick="showProblemDetails(12)">Problem 2: Palindrome Check</li>
+          <li onclick="showProblemDetails(13)">Problem 3: Longest Common Subsequence</li>
+          <li onclick="showProblemDetails(14)">Problem 4: Coin Change</li>
+          <li onclick="showProblemDetails(15)">Problem 5: Matrix Rotation</li>
+        </ul>
+        <div class="chart-container">
+          <canvas id="monthlyChart"></canvas>
+        </div>
+      </div>
+    </section>
+
+    <!-- Past Contests and Ranking Section -->
+    <section class="history-container">
+      <div class="past-contests">
+        <h2>Past Contests</h2>
+        <div class="contest-item">
+          <h3>Weekly Contest 448</h3>
+          <p>May 4, 2025 8:00 AM GMT+530</p>
+        </div>
+        <div class="contest-item">
+          <h3>Weekly Contest 447</h3>
+          <p>Apr 27, 2025 8:00 AM GMT+530</p>
+        </div>
+        <div class="contest-item">
+          <h3>Biweekly Contest 155</h3>
+          <p>Apr 26, 2025 8:00 PM GMT+530</p>
+        </div>
+        <div class="contest-item">
+          <h3>Weekly Contest 446</h3>
+          <p>Apr 20, 2025 8:00 AM GMT+530</p>
+        </div>
+        <div class="contest-item">
+          <h3>Weekly Contest 445</h3>
+          <p>Apr 13, 2025 8:00 AM GMT+530</p>
+        </div>
+        <div class="contest-item">
+          <h3>Biweekly Contest 154</h3>
+          <p>Apr 12, 2025 8:00 PM GMT+530</p>
+        </div>
+      </div>
+
+      <div class="ranking-section">
+        <h2>Global Ranking</h2>
+        <div class="ranking-item">
+          <div class="rank">1</div>
+          <div class="user-info">
+            <div class="user-name">Miruu</div>
+            <div class="user-stats">Rating: 3703 | Attended: 26</div>
+          </div>
+        </div>
+        <div class="ranking-item">
+          <div class="rank">2</div>
+          <div class="user-info">
+            <div class="user-name">Neal Wu us</div>
+            <div class="user-stats">Rating: 3686 | Attended: 51</div>
+          </div>
+        </div>
+        <div class="ranking-item">
+          <div class="rank">3</div>
+          <div class="user-info">
+            <div class="user-name">Yawn_Sean 💬</div>
+            <div class="user-stats">Rating: 3645 | Attended: 84</div>
+          </div>
+        </div>
+        <div class="ranking-item">
+          <div class="rank">4</div>
+          <div class="user-info">
+            <div class="user-name">Yawn</div>
+            <div class="user-stats">Rating: 3599 | Attended: 146</div>
+          </div>
+        </div>
+        <div class="ranking-item">
+          <div class="rank">5</div>
+          <div class="user-info">
+            <div class="user-name">Joshua Chen au</div>
+            <div class="user-stats">Rating: 3589 | Attended: 100</div>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- Problem Modal -->
+    <div id="problemModal" class="modal">
+      <div class="modal-content">
+        <span class="close" onclick="closeModal()">&times;</span>
+        <h2 id="modalTitle">Problem Title</h2>
+        <p id="modalDescription">Problem description will appear here.</p>
+        
+        <label for="languageSelect" style="margin-top: 1rem; display: block;">Language:</label>
+        <select id="languageSelect" style="margin-bottom: 1rem; padding: 0.5rem;" onchange="changeLanguage()">
+          <option value="javascript">JavaScript</option>
+          <option value="python">Python</option>
+          <option value="java">Java</option>
+          <option value="cpp">C++</option>
+        </select>
+        
+        <div id="editorContainer" style="margin-top: 1rem;">
+          <div id="codeEditor" style="height: 400px; width: 100%"></div>
+        </div>
+
+        <div class="editor-buttons" style="margin-top: 1rem;">
+          <button onclick="runCode()">Run Code</button>
+          <button onclick="submitCode()">Submit</button>
+        </div>
+      </div>
+    </div>
+
+    <!-- Badge Modal -->
+    <div id="badgeModal" class="modal">
+      <div class="modal-content" style="text-align: center; padding: 30px;">
+        <span class="close" onclick="closeBadgeModal()">&times;</span>
+        <h2>🎉 Congratulations!</h2>
+        <p>You've successfully submitted your solution!</p>
+        <img src="https://img.freepik.com/free-vector/golden-badge-with-ribbon_1017-33124.jpg" alt="Congratulations Badge" style="max-width: 200px; margin-top: 20px;" />
+        <p style="margin-top: 20px;">Keep up the great work!</p>
+      </div>
+    </div>
+  </main>
+
+  <footer>
+    <p>&copy; 2025 Contest Platform. All Rights Reserved.</p>
+  </footer>
+
+  <script>
+    // Problem data
+    const problems = {
+      1: { title: "Find Prime Numbers", description: "Write a function to find prime numbers in a given range." },
+      2: { title: "Reverse Array", description: "Write a function to reverse an array of numbers." },
+      3: { title: "Merge Sorted Arrays", description: "Merge two sorted arrays into one sorted array." },
+      4: { title: "Knapsack Problem", description: "Solve the 0/1 knapsack problem using dynamic programming." },
+      5: { title: "Longest Substring Without Repeating Characters", description: "Find the longest substring without repetation."},
+      6: { title: "Find Factorial", description: "Compute the factorial of a given number using recursion or iteration." },
+      7: { title: "Binary Search", description: "Implement binary search on a sorted array." },
+      8: { title: "Merge Sort", description: "Implement the merge sort algorithm." },
+      9: { title: "Maximum Subarray Sum", description: "Find the contiguous subarray with the maximum sum." },
+      10: { title: "Valid Parentheses", description: "Check if the input string has valid parentheses." },
+      11: { title: "Fibonacci Sequence", description: "Generate the Fibonacci sequence up to a certain number." },
+      12: { title: "Palindrome Check", description: "Check whether a given string is a palindrome." },
+      13: { title: "Longest Common Subsequence", description: "Find the longest common subsequence between two strings." },
+      14: { title: "Coin Change", description: "Determine the fewest number of coins needed to make up a given amount." },
+      15: { title: "Matrix Rotation", description: "Rotate a square matrix 90 degrees clockwise." }
+    };
+
+    // Modal control functions
+    function showProblemDetails(problemId) {
+      const modal = document.getElementById("problemModal");
+      document.getElementById("modalTitle").innerText = problems[problemId].title;
+      document.getElementById("modalDescription").innerText = problems[problemId].description;
+      modal.style.display = "block";
+      editor.setValue("// Start coding here...", 1); // Default content
+    }
+
+    function closeModal() {
+      document.getElementById("problemModal").style.display = "none";
+    }
+
+    function closeBadgeModal() {
+      document.getElementById("badgeModal").style.display = "none";
+    }
+
+    // Initialize Ace editor
+    const editor = ace.edit("codeEditor");
+    editor.setTheme("ace/theme/monokai");
+    editor.session.setMode("ace/mode/javascript");
+
+    function changeLanguage() {
+      const lang = document.getElementById("languageSelect").value;
+      editor.session.setMode(`ace/mode/${lang}`);
+    }
+
+    function runCode() {
+      const code = editor.getValue();
+      alert("Running your code:\n\n" + code);
+    }
+
+    function submitCode() {
+      // Simulate successful submission
+      alert("Code submitted successfully!");
+      document.getElementById("badgeModal").style.display = "block";
+    }
+
+    // Initialize charts with responsive sizing
+    function createChart(id, label) {
+      const ctx = document.getElementById(id).getContext("2d");
+      new Chart(ctx, {
+        type: "bar",
+        data: {
+          labels: ["P1", "P2", "P3", "P4", "P5"],
+          datasets: [{
+            label: label,
+            data: [12, 19, 10, 6, 14],
+            backgroundColor: "rgba(54, 162, 235, 0.6)",
+            borderColor: "rgba(54, 162, 235, 1)",
+            borderWidth: 1
+          }]
+        },
+        options: {
+          responsive: true,
+          maintainAspectRatio: false,
+          scales: {
+            y: {
+              beginAtZero: true
+            }
+          }
+        }
+      });
+    }
+
+    // Create all charts
+    window.onload = function() {
+      createChart("weeklyChart", "Weekly");
+      createChart("biweeklyChart", "Biweekly");
+      createChart("monthlyChart", "Monthly");
+    };
+
+    // Close modals on click outside
+    window.onclick = function(event) {
+      if (event.target === document.getElementById("problemModal")) closeModal();
+      if (event.target === document.getElementById("badgeModal")) closeBadgeModal();
+    };
+  </script>
+</body>
+</html>

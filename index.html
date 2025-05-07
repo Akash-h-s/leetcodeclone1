@@ -1,0 +1,334 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1" />
+  <title>LeetCode-style Courses</title>
+  <style>
+    body {
+      font-family: Arial, sans-serif;
+      margin: 0;
+      background: #f9f9f9;
+      padding: 20px;
+    }
+
+    nav a {
+      margin-left: 1.5rem;
+      text-decoration: none;
+      color: #555;
+      font-weight: 500;
+    }
+
+    nav a:hover {
+      color: #ffa116;
+    }
+
+    h1 {
+      font-size: 28px;
+      margin-bottom: 20px;
+    }
+
+    .grid {
+      display: grid;
+      grid-template-columns: repeat(auto-fit, minmax(280px, 1fr));
+      gap: 20px;
+    }
+
+    .card {
+      border-radius: 16px;
+      color: white;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+      min-height: 180px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      transition: transform 0.2s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-5px);
+    }
+
+    .play-button {
+      position: absolute;
+      bottom: 16px;
+      right: 16px;
+      width: 48px;
+      height: 48px;
+      background: white;
+      color: black;
+      border-radius: 50%;
+      font-size: 20px;
+      display: flex;
+      align-items: center;
+      justify-content: center;
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.3);
+    }
+
+    .course-title {
+      font-size: 20px;
+      font-weight: bold;
+      margin: 10px 0;
+    }
+
+    .course-subtitle {
+      font-size: 14px;
+      opacity: 0.9;
+    }
+
+    .stats {
+      font-size: 14px;
+      margin-top: 12px;
+      display: flex;
+      justify-content: space-between;
+    }
+
+    .purple { background: linear-gradient(to right, #6a11cb, #2575fc); }
+    .green { background: linear-gradient(to right, #11998e, #38ef7d); }
+    .orange { background: linear-gradient(to right, #f7971e, #ffd200); }
+    .blue { background: linear-gradient(to right, #2193b0, #6dd5ed); }
+    .red { background: linear-gradient(to right, #e53935, #e35d5b); }
+    .teal { background: linear-gradient(to right, #43cea2, #185a9d); }
+
+    /* Popup styling */
+    @keyframes fadeIn {
+      from {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+      to {
+        opacity: 1;
+        transform: scale(1);
+      }
+    }
+
+    @keyframes fadeOut {
+      from {
+        opacity: 1;
+        transform: scale(1);
+      }
+      to {
+        opacity: 0;
+        transform: scale(0.8);
+      }
+    }
+
+    .popup {
+      position: fixed;
+      top: 0;
+      left: 0;
+      width: 100%;
+      height: 100%;
+      background-color: rgba(0, 0, 0, 0.5);
+      display: none;
+      justify-content: center;
+      align-items: center;
+      animation: fadeIn 0.5s ease-out;
+    }
+
+    .popup-content {
+      background-color: white;
+      padding: 20px;
+      border-radius: 8px;
+      text-align: center;
+      max-width: 450px;
+      width: 90%;
+    }
+
+    .popup-card {
+      border-radius: 16px;
+      color: white;
+      padding: 20px;
+      position: relative;
+      overflow: hidden;
+      min-height: 220px;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      margin-top: 15px;
+    }
+
+    .close-btn {
+      background-color: #ffa116;
+      border: none;
+      padding: 10px 20px;
+      font-size: 16px;
+      border-radius: 5px;
+      cursor: pointer;
+      margin-top: 20px;
+    }
+
+    .close-btn:hover {
+      background-color: #ff7a00;
+    }
+
+    /* Responsive Design */
+    @media (max-width: 768px) {
+      .popup-content {
+        padding: 15px;
+        width: 90%; 
+      }
+
+      .popup-card {
+        padding: 15px;
+      }
+
+      .play-button {
+        font-size: 16px; 
+        width: 40px;
+        height: 40px;
+      }
+    }
+
+    @media (min-width: 1024px) {
+      .popup-content {
+        width: 40%;
+      }
+    }
+  </style>
+</head>
+<body>
+  <nav>
+    <a href="index.html">Explore</a>
+    <a href="problems.html">Problems</a>
+    <a href="contest.html">Contests</a>
+    <a href="discus.html">Discuss</a>
+    <a href="login.html">Sign In</a>
+    <a href="account.html">Account</a>
+  </nav>
+
+  <h1>Courses</h1>
+
+  <div class="grid" id="course-container"></div>
+
+  <!-- Popup -->
+  <div id="streak-popup" class="popup">
+    <div class="popup-content">
+      <h2>Maintain a 30days streak!</h2>
+      <p>Get this premium course for free, complete it and earn 50 coins.</p>
+      <div id="popup-course-card" class="popup-card"></div>
+      <button id="close-popup" class="close-btn">Got it!</button>
+    </div>
+  </div>
+
+  <script>
+    const baseCourses = [
+      {
+        subtitle: "LeetCode's Interview Crash Course",
+        title: "Data Structures and Algorithms",
+        description: "Master essential data structures and algorithms used in real interviews.",
+        price: "$29.99",
+        chapters: 13,
+        items: 149,
+        progress: 1,
+        color: "purple"
+      },
+      {
+        subtitle: "LeetCode’s Interview Crash Course",
+        title: "System Design for Interviews and Beyond",
+        description: "Learn scalable system design concepts and ace system interviews.",
+        price: "$39.99",
+        chapters: 16,
+        items: 81,
+        progress: 0,
+        color: "green"
+      },
+      {
+        subtitle: "The LeetCode Beginner's Guide",
+        title: "The LeetCode Beginner's Guide",
+        description: "A complete starter guide for new programmers on LeetCode.",
+        price: "$19.99",
+        chapters: 4,
+        items: 17,
+        progress: 0,
+        color: "orange"
+      },
+      {
+        subtitle: "LeetCode's Interview Crash Course",
+        title: "Cheatsheets",
+        description: "Handy cheatsheets to revise algorithms and techniques quickly.",
+        price: "$9.99",
+        chapters: 1,
+        items: 2,
+        progress: 0,
+        color: "blue"
+      },
+      {
+        subtitle: "LeetCode's Interview Crash Course",
+        title: "Advanced Algorithms",
+        description: "Explore complex algorithms and improve your problem-solving skills.",
+        price: "$34.99",
+        chapters: 8,
+        items: 72,
+        progress: 0,
+        color: "teal"
+      },
+      {
+        subtitle: "LeetCode's Interview Crash Course",
+        title: "Mock Interviews",
+        description: "Practice real-time mock interviews with timed challenges.",
+        price: "$24.99",
+        chapters: 5,
+        items: 20,
+        progress: 0,
+        color: "red"
+      }
+    ];
+
+    const courses = [...baseCourses, ...baseCourses];
+    const container = document.getElementById("course-container");
+
+    courses.forEach(course => {
+      const card = document.createElement("div");
+      card.className = `card ${course.color}`;
+      card.innerHTML = `
+        <div class="course-subtitle">${course.subtitle}</div>
+        <div class="course-title">${course.title}</div>
+        <div class="stats">
+          <div>
+            <div>${course.chapters} Chapters</div>
+            <div>${course.items} Items</div>
+          </div>
+          <div>${course.progress}%</div>
+        </div>
+        <div class="play-button">▶</div>
+      `;
+      container.appendChild(card);
+    });
+
+    function showPopup() {
+      const popup = document.getElementById('streak-popup');
+      const randomCourse = courses[Math.floor(Math.random() * courses.length)];
+      const courseCard = document.getElementById('popup-course-card');
+
+      courseCard.className = `popup-card ${randomCourse.color}`;
+      courseCard.innerHTML = `
+        <div class="course-subtitle">${randomCourse.subtitle}</div>
+        <div class="course-title">${randomCourse.title}</div>
+        <p style="font-size: 14px; margin-top: 10px; color: white;">${randomCourse.description}</p>
+        <div class="stats">
+          <div>
+            <div>${randomCourse.chapters} Chapters</div>
+            <div>${randomCourse.items} Items</div>
+          </div>
+          <div>${randomCourse.progress}%</div>
+        </div>
+        <div style="margin-top: 10px; font-size: 16px; font-weight: bold;">Premium Price: ${randomCourse.price}</div>
+        <div class="play-button">▶</div>
+      `;
+
+      popup.style.display = 'flex';
+    }
+
+    function closePopup() {
+      const popup = document.getElementById('streak-popup');
+      popup.style.animation = 'fadeOut 0.5s ease-out';
+      setTimeout(() => {
+        popup.style.display = 'none';
+      }, 500);
+    }
+
+    setInterval(showPopup, 30000); // Show popup every 30 seconds
+
+    document.getElementById('close-popup').addEventListener('click', closePopup);
+  </script>
+</body>
+</html>

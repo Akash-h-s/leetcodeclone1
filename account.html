@@ -1,0 +1,382 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8">
+  <title>Calendar + Trending + Yearly</title>
+  <style>
+    body {
+      margin: 0;
+      font-family: 'Segoe UI', sans-serif;
+      background-color: #1e1e1e;
+      color: #fff;
+    }
+
+    .container {
+      display: flex;
+      justify-content: space-around;
+      flex-wrap: wrap;
+      padding: 20px;
+      gap: 30px;
+    }
+
+    /* Calendar Section */
+    .calendar-section {
+      background: #2b2b2b;
+      border-radius: 10px;
+      padding: 15px;
+      width: 350px;
+      flex-shrink: 0;
+    }
+
+    h2 {
+      margin: 0 0 10px;
+      color: #ffffff;
+    }
+
+    .calendar-header {
+      display: flex;
+      justify-content: space-between;
+      margin-bottom: 10px;
+    }
+
+    .calendar-days {
+      display: grid;
+      grid-template-columns: repeat(7, 1fr);
+      gap: 5px;
+    }
+
+    .calendar-days div {
+      height: 40px;
+      line-height: 40px;
+      text-align: center;
+      border-radius: 6px;
+    }
+
+    .calendar-cell {
+      background-color: #3a3a3a;
+      color: #fff;
+    }
+
+    .calendar-cell.active {
+      background-color: #4caf50;
+    }
+
+    .calendar-cell.today {
+      background-color: #2196f3;
+    }
+
+    .weekly-premium {
+      background-color: #3e3e3e;
+      padding: 10px;
+      border-radius: 8px;
+      margin-top: 10px;
+      display: flex;
+      justify-content: space-between;
+      color: #ffcc00;
+      font-weight: bold;
+    }
+
+    .weekly-tags span {
+      margin-left: 10px;
+      background: #f39c12;
+      padding: 4px 8px;
+      border-radius: 50%;
+      color: #1e1e1e;
+    }
+
+    /* Trending Companies Section */
+    .trending-section {
+      background-color: #3a3a3a;
+      border-radius: 12px;
+      padding: 20px;
+      max-width: 350px;
+      flex-shrink: 0;
+    }
+
+    .trending-section h3 {
+      margin-bottom: 15px;
+      font-size: 18px;
+    }
+
+    .search-box {
+      width: 90%;
+      padding: 10px;
+      border: none;
+      border-radius: 8px;
+      background: #2a2a2a;
+      color: #ccc;
+      margin-bottom: 15px;
+    }
+
+    .company-grid {
+      display: grid;
+      grid-template-columns: 1fr 1fr;
+      gap: 10px 12px;
+    }
+
+    .company-item {
+      background-color: #2a2a2a;
+      padding: 8px 10px;
+      border-radius: 20px;
+      font-size: 14px;
+      display: flex;
+      justify-content: space-between;
+      align-items: center;
+      color: #ddd;
+    }
+
+    .company-count {
+      background: #ffaa33;
+      color: #000;
+      padding: 2px 8px;
+      border-radius: 10px;
+      font-weight: bold;
+      margin-left: 6px;
+    }
+
+    /* Profile Card */
+    .profile-card {
+      background-color: #2b2b2b;
+      border-radius: 16px;
+      padding: 20px;
+      width: 350px;
+      flex-shrink: 0;
+      display: flex;
+      flex-direction: column;
+      align-items: center;
+    }
+
+    .profile-img {
+      width: 80px;
+      height: 80px;
+      background: #444;
+      border-radius: 50%;
+      margin-bottom: 10px;
+    }
+
+    .rank {
+      font-size: 20px;
+      font-weight: bold;
+      color: #4caf50;
+    }
+
+    .edit-btn {
+      margin: 10px 0;
+      background-color: #2e5a3a;
+      color: #b3ffb3;
+      padding: 10px 20px;
+      border: none;
+      border-radius: 10px;
+      cursor: pointer;
+    }
+
+    .profile-section h4 {
+      margin-top: 20px;
+      margin-bottom: 10px;
+    }
+
+    .stat {
+      display: flex;
+      align-items: center;
+      justify-content: space-between;
+      width: 100%;
+      margin-bottom: 8px;
+    }
+
+    .languages {
+      margin-top: 10px;
+      width: 100%;
+    }
+
+    .lang-pill {
+      background-color: #444;
+      padding: 4px 12px;
+      border-radius: 12px;
+      margin-right: 10px;
+      color: #ccc;
+      font-weight: bold;
+    }
+
+    .scroll-icon {
+      margin-top: 10px;
+      text-align: center;
+      font-size: 24px;
+      color: #888;
+    }
+
+    /* Replace this style block */
+    .heatmap {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 50px; /* Adjust this value to control space between months */
+}
+
+.month {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 8px; /* Space between label and grid */
+}
+
+.day-grid {
+  display: grid;
+  grid-template-columns: repeat(3, 14px); /* 3 columns */
+  grid-auto-rows: 14px;
+  gap: 10px;
+}
+
+.cell {
+  width: 14px;
+  height: 14px;
+  border-radius: 2px;
+  background-color: #ffffff; /* default is white for inactive */
+  transition: background 0.2s;
+}
+
+.lvl-1 { background-color: #9be9a8; }
+.lvl-2 { background-color: #40c463; }
+.lvl-3 { background-color: #30a14e; }
+.lvl-4 { background-color: #216e39; }
+
+  </style>
+</head>
+<body>
+
+<div class="container">
+    <!-- Calendar -->
+    <div class="profile-card">
+        <div class="profile-img"></div>
+        <div><strong>akash-h-s</strong></div>
+        <div class="rank">Rank 107,274</div>
+        <button class="edit-btn">Edit Profile</button>
+        <div class="profile-section">
+          <h4>Community Stats</h4>
+          <div class="stat"><span>👁️ Views</span> <span>0</span></div>
+          <div class="stat"><span>✅ Solutions</span> <span>3</span></div>
+          <div class="stat"><span>💬 Discuss</span> <span>0</span></div>
+          <div class="stat"><span>⭐ Reputation</span> <span>0</span></div>
+        </div>
+        <div class="languages">
+          <h4>Languages</h4>
+          <div class="stat"><span class="lang-pill">C++</span> <span>566 problems solved</span></div>
+          <div class="stat"><span class="lang-pill">Java</span> <span>1 problem solved</span></div>
+        </div>
+      </div>
+    
+    <div class="calendar-section">
+      <h2>Monthly Rating Progress</h2>
+      <div class="calendar-header">
+        <span>May 2025</span>
+        <span>Day 6</span>
+      </div>
+      <div class="calendar-days">
+        <div>S</div><div>M</div><div>T</div><div>W</div><div>T</div><div>F</div><div>S</div>
+        <div></div><div></div><div></div><div></div><div class="calendar-cell">1</div><div class="calendar-cell">2</div><div class="calendar-cell">3</div>
+        <div class="calendar-cell active">4</div><div class="calendar-cell">5</div><div class="calendar-cell today">6</div><div class="calendar-cell">7</div><div class="calendar-cell">8</div><div class="calendar-cell">9</div><div class="calendar-cell">10</div>
+        <div class="calendar-cell">11</div><div class="calendar-cell">12</div><div class="calendar-cell">13</div><div class="calendar-cell">14</div><div class="calendar-cell">15</div><div class="calendar-cell">16</div><div class="calendar-cell">17</div>
+        <div class="calendar-cell">18</div><div class="calendar-cell">19</div><div class="calendar-cell">20</div><div class="calendar-cell">21</div><div class="calendar-cell">22</div><div class="calendar-cell">23</div><div class="calendar-cell">24</div>
+        <div class="calendar-cell">25</div><div class="calendar-cell">26</div><div class="calendar-cell">27</div><div class="calendar-cell">28</div><div class="calendar-cell">29</div><div class="calendar-cell">30</div><div class="calendar-cell">31</div>
+      </div>
+      <div class="weekly-premium">
+        Weekly Premium
+        <div class="weekly-tags">
+          <span>W1</span><span>W2</span><span>W3</span><span>W4</span><span>W5</span>
+        </div>
+      </div>
+    </div>
+  
+    <!-- Profile Card -->
+    
+
+  <!-- Trending Companies -->
+  <div class="trending-section">
+    <h3>Trending Companies</h3>
+    <input class="search-box" type="text" placeholder="Search for a company...">
+    <div class="company-grid">
+      <div class="company-item">Meta <span class="company-count">1157</span></div>
+      <div class="company-item">Google <span class="company-count">1948</span></div>
+      <div class="company-item">Amazon <span class="company-count">1834</span></div>
+      <div class="company-item">Uber <span class="company-count">583</span></div>
+      <div class="company-item">Apple <span class="company-count">656</span></div>
+      <div class="company-item">Oracle <span class="company-count">313</span></div>
+      <div class="company-item">TikTok <span class="company-count">445</span></div>
+      <div class="company-item">Bloomberg <span class="company-count">1011</span></div>
+      <div class="company-item">LinkedIn <span class="company-count">168</span></div>
+      <div class="company-item">Microsoft <span class="company-count">1153</span></div>
+      <div class="company-item">Salesforce <span class="company-count">197</span></div>
+      <div class="company-item">Goldman Sachs <span class="company-count">250</span></div>
+      <div class="company-item">Adobe <span class="company-count">621</span></div>
+      <div class="company-item">Snap <span class="company-count">108</span></div>
+      <div class="company-item">Atlassian <span class="company-count">72</span></div>
+      <div class="company-item">Airbnb <span class="company-count">58</span></div>
+      <div class="company-item">Citadel <span class="company-count">105</span></div>
+      <div class="company-item">DoorDash <span class="company-count">87</span></div>
+      <div class="company-item">Pinterest <span class="company-count">47</span></div>
+      <div class="company-item">Snowflake <span class="company-count">84</span></div>
+    </div>
+    <div class="scroll-icon">↑</div>
+  </div>
+</div>
+
+<!-- Yearly Heatmap -->
+<div class="yearly-section">
+  <div class="heatmap-title">
+    <strong>390</strong> submissions in the past one year
+  </div>
+  <div class="stats">
+    Total active days: <strong>123</strong> &nbsp;|&nbsp; Max streak: <strong>7</strong>
+  </div>
+
+  <div class="heatmap" id="heatmap"></div>
+</div>
+
+<script>
+    const months = [
+      "May", "Jun", "Jul", "Aug", "Sep", "Oct",
+      "Nov", "Dec", "Jan", "Feb", "Mar", "Apr"
+    ];
+  
+    const monthData = {
+      "May": 24, "Jun": 26, "Jul": 18, "Aug": 11, "Sep": 15,
+      "Oct": 30, "Nov": 14, "Dec": 20, "Jan": 6, "Feb": 7,
+      "Mar": 30, "Apr": 26
+    };
+  
+    const getLevel = () => {
+      const rand = Math.random();
+      if (rand < 0.4) return 'lvl-0';  // white
+      if (rand < 0.6) return 'lvl-1';
+      if (rand < 0.75) return 'lvl-2';
+      if (rand < 0.9) return 'lvl-3';
+      return 'lvl-4';
+    };
+  
+    const heatmap = document.getElementById("heatmap");
+  
+    months.forEach(month => {
+      const monthDiv = document.createElement("div");
+      monthDiv.className = "month";
+  
+      const label = document.createElement("div");
+      label.className = "month-label";
+      label.textContent = month;
+      monthDiv.appendChild(label);
+  
+      const grid = document.createElement("div");
+      grid.className = "day-grid";
+  
+      const activeDays = monthData[month];
+      for (let i = 0; i < 30; i++) {
+        const cell = document.createElement("div");
+        cell.className = "cell " + (i < activeDays ? getLevel() : '');
+        grid.appendChild(cell);
+      }
+  
+      monthDiv.appendChild(grid);
+      heatmap.appendChild(monthDiv);
+    });
+  </script>
+  
+
+</body>
+</html>
